@@ -1,0 +1,53 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <esp_chip_info.h>
+
+#if 1
+void setup()
+{
+  Serial.begin(115200);
+  while (!Serial)
+    delay(50);
+  Serial.printf("Total heap: %d\r\n", ESP.getHeapSize());
+  Serial.printf("Free heap: %d\r\n", ESP.getFreeHeap());
+  Serial.printf("Total PSRAM: %d\r\n", ESP.getPsramSize());
+  Serial.printf("Free PSRAM: %d\r\n", ESP.getFreePsram());
+  //     lv_init();
+  Serial.printf("Total heap: %d\r\n", ESP.getHeapSize());
+  Serial.printf("Free heap: %d\r\n", ESP.getFreeHeap());
+  Serial.printf("Total PSRAM: %d\r\n", ESP.getPsramSize());
+  Serial.printf("Free PSRAM: %d\r\n", ESP.getFreePsram());
+}
+#else
+const char *models[] = {
+"","ESP32","ESP32-S2","","","ESP32_C3","ESP32-H2","","","ESP32-S3"
+};
+
+void setup()
+{
+  Serial.begin(115200);
+  while (!Serial) delay(50);
+  /* Print chip information */
+  esp_chip_info_t chip_info;
+  esp_chip_info(&chip_info);
+  Serial.printf("This is ESP32 chip with %d CPU cores, WiFi%s%s model %s\n",
+        chip_info.cores,
+        (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
+        (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "",
+        models[chip_info.model]);
+
+  Serial.printf("embedded PSRAM: %s\n", (chip_info.features & CHIP_FEATURE_EMB_PSRAM) ? "yes" : "no");
+  Serial.printf("features %X\n",chip_info.features);
+
+  if (chip_info.features & CHIP_FEATURE_EMB_PSRAM)
+    Serial.printf("%iMB psram\n", ESP.getPsramSize() / (1024 * 1024));
+
+  Serial.printf("silicon revision %d\n", ESP.getChipRevision());
+
+  Serial.printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
+        (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
+}
+#endif
+
+void loop() {}
