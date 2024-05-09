@@ -38,7 +38,9 @@ Demonstrates how to install the Arduino_GFX library and define the ESP32-4827S04
 The screen color is set and some text written in the center of the screen,
 ## TouchNoLVGL
 
-<p align="center"><img width="50%" src="Images/IMG_0182.MOV"></p>
+<video width="640" height="480" controls>
+  <source src="Images/IMG_0182.mp4" type="video/mp4">
+</video>
 
 An extension of the <b>HelloWorldNoLVGL</b> example. The touch screen is defined and polled regularily. If a touch event is detected then a red circle is drawn at that point.  
 My board has the capacative touch screen powered by the GT911 controller so the comments below are only relevant to that device. If you have the resistive touch version of the board, feel free to update this document.  
@@ -87,6 +89,8 @@ build_flags = -Iinclude/
 board_build.arduino.memory_type = qio_opi
 ```
 ## lvglButtonExample
-<p align="center"><img width="50%" src="Images/IMG_0190.MOV"></p>
+<video width="640" height="480" controls>
+  <source src="Images/IMG_0190.mp4" type="video/mp4">
+</video>
 
 This is an implementation of the *lv_example_button_1* example from the lvgl examples library. Library installation and PSRAM unlocking is as shown in the previous example.
