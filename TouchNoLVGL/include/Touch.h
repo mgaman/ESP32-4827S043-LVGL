@@ -1,0 +1,6 @@
+ #define TOUCH_GT911
+ #define TOUCH_GT911_SCL 20
+ #define TOUCH_GT911_SDA 19
+ #define TOUCH_GT911_INT -1
+ #define TOUCH_GT911_RST 38
+ 

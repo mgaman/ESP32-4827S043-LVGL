@@ -1,8 +1,12 @@
 #include <Arduino.h>
 #include <Arduino_GFX_Library.h>
-//#include <Wire.h>
 #include <TAMC_GT911.h>
-#include "touch.h"
+#include "Touch.h"
+
+#define SCREEN_ROTATION 2  // 0,2 landscape 1,3 portrait
+#if SCREEN_ROTATION==0||SCREEN_ROTATION==2
+#define SCREEN_PORTRAIT
+#endif
 
 Arduino_ESP32RGBPanel *panel = new Arduino_ESP32RGBPanel(
     40 /* DE */, 41 /* VSYNC */, 39 /* HSYNC */, 42 /* DCLK */,
@@ -27,17 +31,21 @@ void backlightSetup()
   digitalWrite(TFT_BL, HIGH);
 }
 
-TAMC_GT911 ts = TAMC_GT911(TOUCH_GT911_SDA, TOUCH_GT911_SCL, TOUCH_GT911_INT, TOUCH_GT911_RST, TOUCH_WIDTH, TOUCH_HEIGHT);
+TAMC_GT911 ts = TAMC_GT911(TOUCH_GT911_SDA, TOUCH_GT911_SCL, TOUCH_GT911_INT, TOUCH_GT911_RST,
+#ifdef SCREEN_PORTRAIT
+                                                                                                TFT_HOR_RES, TFT_VER_RES);
+#else
+                                                                                                TFT_VER_RES, TFT_HOR_RES);
+#endif
 
 void setup()
 {
   Serial.begin(115200);
   while (!Serial) delay(50);
   // initialise screen and touch device
-//  Wire.begin(TOUCH_GT911_SDA, TOUCH_GT911_SCL);
   backlightSetup();
   gfx->begin();
-  gfx->setRotation(2);
+  gfx->setRotation(SCREEN_ROTATION);
   gfx->fillScreen(CYAN);
   gfx->setTextColor(BLACK);
   gfx->print("Touch Test");
@@ -60,7 +68,7 @@ void loop()
     x /= ts.touches;
     y /= ts.touches;
     // draw red circle at x,y
-   // Serial.printf("x: %d y: %d\n",x,y);
+    Serial.printf("x: %d y: %d\n",x,y);
     gfx->fillCircle(x, y, 10, RED);
     delay(50);
   }

@@ -1,4 +1,7 @@
 # Introduction
+
+<p align="center"><img width="50%" src="Images/IMG_0179.png"></p>
+
 Recently I bought a couple of [Cheap Yellow Displays](https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display). They were both based on SPI controlled graphics chips and well covered by the [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) and [Widgets](https://github.com/Bodmer/TFT_eWidget.git) libraries.  
 The first 2 boards were 2.8" and 3.2" so I bought another, 4.3" [board](https://www.aliexpress.com/item/1005004788147691.html?spm=a2g0o.order_list.order_list_main.11.54531802TOrJoA), thinking it would be the same as before, just larger.  
 As I soon discovered the [ESP32-4827S043](https://www.openhasp.com/0.7.0/hardware/sunton/esp32-4827s043) is quite a different beast. While a serial interface like SPI may give reasonable performance for a small screen it can be a bottle-neck for larger screens, with more data to shift. Accordingly the ESP32-4827S043 uses a parallel interface with faster throughput. Sadly it is not supported by TFT_eSPI so we need a different solution.  
@@ -34,6 +37,9 @@ lib_deps = 	moononournation/GFX Library for Arduino@^1.4.6
 Demonstrates how to install the Arduino_GFX library and define the ESP32-4827S043 device.  
 The screen color is set and some text written in the center of the screen,
 ## TouchNoLVGL
+
+<p align="center"><img width="50%" src="Images/IMG_0182.MOV"></p>
+
 An extension of the <b>HelloWorldNoLVGL</b> example. The touch screen is defined and polled regularily. If a touch event is detected then a red circle is drawn at that point.  
 My board has the capacative touch screen powered by the GT911 controller so the comments below are only relevant to that device. If you have the resistive touch version of the board, feel free to update this document.  
 Modifiy platformio.ini to install the GT911 library.  
@@ -80,3 +86,7 @@ build_flags = -Iinclude/
     -DBOARD_HAS_PSRAM -mfix-esp32-psram-cache-issue
 board_build.arduino.memory_type = qio_opi
 ```
+## lvglButtonExample
+<p align="center"><img width="50%" src="Images/IMG_0190.MOV"></p>
+
+This is an implementation of the *lv_example_button_1* example from the lvgl examples library. Library installation and PSRAM unlocking is as shown in the previous example.

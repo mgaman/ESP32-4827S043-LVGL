@@ -33,7 +33,7 @@ void setup() {
   gfx->begin();
   gfx->setRotation(2);
   gfx->fillScreen(CYAN);
-  gfx->setTextSize(2);
+  gfx->setTextSize(4);
   gfx->setTextColor(BLACK);
   // calculate size of text then calculate x,y co-ordinates to place in center of the screen
   int16_t x,y;
