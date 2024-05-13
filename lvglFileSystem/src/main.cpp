@@ -121,25 +121,63 @@ void setup()
   lv_indev_set_type(touchDev, LV_INDEV_TYPE_POINTER); /*Touchpad should have POINTER type*/
   lv_indev_set_read_cb(touchDev, my_touchpad_read);
 
+// create a text area
+  lv_obj_t * ta = lv_textarea_create(lv_screen_active());
+  lv_textarea_set_one_line(ta, false);
+  lv_obj_align(ta, LV_ALIGN_TOP_LEFT, 10, 10);
+  
+  lv_textarea_set_text(ta,"hello there");
+    
   // initialize FS driver
   lv_port_fs_init();
   if (lv_fs_is_ready('S'))
   {
     LV_LOG_USER("FS ready");
-#if 0 // read example
+    String text = "";
+#if 1   // read directory example
+    if (lv_fs_dir_open(&dir,"S:/fonts") == LV_FS_RES_OK) {
+      LV_LOG_USER("Directory opened");
+      text += "directory opened\n";
+      lv_textarea_set_text(ta,text.c_str());
+      while (true) {
+        if (lv_fs_dir_read(&dir,mybuff,sizeof(mybuff)) != LV_FS_RES_OK) {
+          break;
+        }
+        if (strlen(mybuff) == 0)
+          break;
+        text += mybuff;
+        text += "\n";
+        lv_textarea_set_text(ta,text.c_str());
+      }
+      if (lv_fs_dir_close(&dir)== LV_FS_RES_OK) {
+        text += "directory closed\n";
+        lv_textarea_set_text(ta,text.c_str());
+      }
+      else
+        LV_LOG_USER("Directory not closed");
+    }
+    else
+      LV_LOG_USER("Directory not opened");
+#endif
+#if 0 // read file example
     if ( lv_fs_open(&file,"S:/people/lists/names.txt",LV_FS_MODE_RD) == LV_FS_RES_OK) {
       LV_LOG_USER("file opened");
       uint32_t bread=0,totalread=0,position;
       lv_fs_res_t res;
       memset(mybuff,0,sizeof(mybuff));
       res = lv_fs_read(&file,mybuff,8,&bread);
+      String text = "";
       while  ( res == LV_FS_RES_OK && bread > 0) {
-        LV_LOG_USER(mybuff);
+        mybuff[bread] = 0; // add end marker
+        //LV_LOG_USER(mybuff);
+ //       Serial.print(mybuff);
+        text += mybuff;
+        lv_textarea_set_text(ta,text.c_str());
         memset(mybuff,0,bread);
-        if (lv_fs_tell(&file,&position) == LV_FS_RES_OK) {
-          sprintf(mybuff,"position %d",position);
-          LV_LOG_USER(mybuff);
-        }
+//        if (lv_fs_tell(&file,&position) == LV_FS_RES_OK) {
+  //        sprintf(mybuff,"position %d",position);
+    //      LV_LOG_USER(mybuff);
+      //  }
         if (bread > 0)
           totalread += bread;
         else
@@ -157,7 +195,7 @@ void setup()
       LV_LOG_USER("file not opened");
     }
 #endif
-#if 1 // write example
+#if 0 // write example
     if (lv_fs_open(&file, "S:/people/lists/stuff.txt", LV_FS_MODE_WR) == LV_FS_RES_OK)
     {
       LV_LOG_USER("file opened");

@@ -20,7 +20,9 @@
 static lv_fs_drv_t fs_drv;
 static bool SDready = false;
 static File sd_file;  // SD entity
+static File sd_dir;  // SD entity
 static lv_fs_file_t lv_file; // lvgl entity
+static lv_fs_dir_t lv_dir;
 static char buff[50];  // local sprintf
 /**********************
  *      TYPEDEFS
@@ -279,10 +281,24 @@ static lv_fs_res_t fs_tell(lv_fs_drv_t * drv, void * file_p, uint32_t * pos_p)
  */
 static void * fs_dir_open(lv_fs_drv_t * drv, const char * path)
 {
-    void * dir = NULL;
-    /*Add your code here*/
- //   dir = ...           /*Add your code here*/
-          return dir;
+    void *dir = NULL;
+    LV_LOG_USER(path);
+    switch (drv->letter)
+    {
+    case 'S':
+        sprintf(buff, "Open SD path %s\n", path);
+        LV_LOG_USER(buff);
+        sd_dir = SD.open(path);
+        if (sd_dir && sd_dir.isDirectory())
+        {
+            lv_dir.drv = drv;
+            lv_dir.dir_d = (void *)&sd_dir;
+            dir = &lv_dir;
+        }
+        break;
+    }
+    // returns pointer to directory object
+    return dir;
 }
 
 /**
@@ -297,9 +313,21 @@ static void * fs_dir_open(lv_fs_drv_t * drv, const char * path)
 static lv_fs_res_t fs_dir_read(lv_fs_drv_t * drv, void * rddir_p, char * fn, uint32_t fn_len)
 {
     lv_fs_res_t res = LV_FS_RES_NOT_IMP;
-
-    /*Add your code here*/
-
+    switch (drv->letter)
+    {
+    case 'S':
+        memset(fn, 0, fn_len);
+        sd_file = ((File *)(((lv_fs_dir_t *)rddir_p)->dir_d))->openNextFile();
+        if (sd_file)
+        {
+            if (sd_file.isDirectory())
+                strcpy(fn,"DIR:");
+            strncat(fn, sd_file.name(),min(strlen(sd_file.name()),fn_len-1));
+            LV_LOG_USER(sd_file.name());
+        }
+        res = LV_FS_RES_OK;
+        break;
+    }
     return res;
 }
 
@@ -312,9 +340,15 @@ static lv_fs_res_t fs_dir_read(lv_fs_drv_t * drv, void * rddir_p, char * fn, uin
 static lv_fs_res_t fs_dir_close(lv_fs_drv_t * drv, void * rddir_p)
 {
     lv_fs_res_t res = LV_FS_RES_NOT_IMP;
-
-    /*Add your code here*/
-
+    sprintf(buff,"Close dir %c\n",drv->letter);
+    LV_LOG_USER(buff);
+    switch (drv->letter)
+    {
+    case 'S':
+        ((File *)(((lv_fs_dir_t *)rddir_p)->dir_d))->close();
+        res = LV_FS_RES_OK;
+        break;
+    }
     return res;
 }
 
