@@ -10,9 +10,16 @@
  *      INCLUDES
  *********************/
 #include <Arduino.h>
-#include "lv_port_fs.h"
 #include <lvgl.h>
+#include "lv_port_fs.h"
+#if DRIVE_TYPE==0
+#include <LittleFS.h>
+#elif DRIVE_TYPE==1
 #include <SD.h>
+#else
+#error Define drive type
+#endif
+
 
 /*********************
  *      Static Data
@@ -62,10 +69,16 @@ static lv_fs_res_t fs_dir_close(lv_fs_drv_t * drv, void * rddir_p);
  *   GLOBAL FUNCTIONS
  **********************/
 void lv_port_fs_end(void) {
+#if DRIVE_TYPE==0
+    LittleFS.end();
+#elif DRIVE_TYPE==1
     SD.end();
+#endif
+
     SDready = false;
-    LV_LOG_USER("SD unmounted");
+    LV_LOG_USER("disk unmounted");
 }
+
 void lv_port_fs_init(void)
 {
     /*----------------------------------------------------
@@ -105,8 +118,12 @@ void lv_port_fs_init(void)
 /*Initialize your Storage device and File system.*/
 static void fs_init()
 {
+#if DRIVE_TYPE==0
+    SDready = LittleFS.begin();
+#elif DRIVE_TYPE == 1
     SDready = SD.begin();
-    LV_LOG_USER(SDready ? "SD init pass" : "SD init fail");
+#endif
+    LV_LOG_USER(SDready ? "Drive init pass" : "Drive init fail");
 }
 
 /**
@@ -130,7 +147,11 @@ static void * fs_open(lv_fs_drv_t * drv, const char * path, lv_fs_mode_t mode)
     if (strlen(pmode) > 0) {
         switch (drv->letter) {
             case 'S':
+#if DRIVE_TYPE==0
+                sd_file = LittleFS.open(path,pmode);
+#else
                 sd_file = SD.open(path,pmode);
+#endif
                 if (sd_file) {
                     LV_LOG_USER("fs_open success");
                     lv_file.drv = drv;
@@ -286,9 +307,13 @@ static void * fs_dir_open(lv_fs_drv_t * drv, const char * path)
     switch (drv->letter)
     {
     case 'S':
-        sprintf(buff, "Open SD path %s\n", path);
+        sprintf(buff, "Open path %s\n", path);
         LV_LOG_USER(buff);
+#if DRIVE_TYPE==0
+        sd_dir = LittleFS.open(path);
+#elif DRIVE_TYPE==1
         sd_dir = SD.open(path);
+#endif
         if (sd_dir && sd_dir.isDirectory())
         {
             lv_dir.drv = drv;

@@ -135,7 +135,7 @@ void setup()
     LV_LOG_USER("FS ready");
     String text = "";
 #if 1   // read directory example
-    if (lv_fs_dir_open(&dir,"S:/fonts") == LV_FS_RES_OK) {
+    if (lv_fs_dir_open(&dir,"S:/") == LV_FS_RES_OK) {
       LV_LOG_USER("Directory opened");
       text += "directory opened\n";
       lv_textarea_set_text(ta,text.c_str());
@@ -160,7 +160,7 @@ void setup()
       LV_LOG_USER("Directory not opened");
 #endif
 #if 0 // read file example
-    if ( lv_fs_open(&file,"S:/people/lists/names.txt",LV_FS_MODE_RD) == LV_FS_RES_OK) {
+    if ( lv_fs_open(&file,"S:/lines.txt",LV_FS_MODE_RD) == LV_FS_RES_OK) {
       LV_LOG_USER("file opened");
       uint32_t bread=0,totalread=0,position;
       lv_fs_res_t res;
@@ -169,15 +169,9 @@ void setup()
       String text = "";
       while  ( res == LV_FS_RES_OK && bread > 0) {
         mybuff[bread] = 0; // add end marker
-        //LV_LOG_USER(mybuff);
- //       Serial.print(mybuff);
         text += mybuff;
         lv_textarea_set_text(ta,text.c_str());
         memset(mybuff,0,bread);
-//        if (lv_fs_tell(&file,&position) == LV_FS_RES_OK) {
-  //        sprintf(mybuff,"position %d",position);
-    //      LV_LOG_USER(mybuff);
-      //  }
         if (bread > 0)
           totalread += bread;
         else
@@ -196,12 +190,12 @@ void setup()
     }
 #endif
 #if 0 // write example
-    if (lv_fs_open(&file, "S:/people/lists/stuff.txt", LV_FS_MODE_WR) == LV_FS_RES_OK)
+    if (lv_fs_open(&file, "S:/stuff.txt", LV_FS_MODE_WR) == LV_FS_RES_OK)
     {
       LV_LOG_USER("file opened");
-//      if (lv_fs_seek(&file, 0, LV_FS_SEEK_END) == LV_FS_RES_OK)  // append to end
+      if (lv_fs_seek(&file, 0, LV_FS_SEEK_END) == LV_FS_RES_OK)  // append to end
 //      if (lv_fs_seek(&file, 0, LV_FS_SEEK_SET) == LV_FS_RES_OK)    // rewind to beginning
-      if (lv_fs_seek(&file, 50, LV_FS_SEEK_SET) == LV_FS_RES_OK)   // start at an arbitary place
+//      if (lv_fs_seek(&file, 50, LV_FS_SEEK_SET) == LV_FS_RES_OK)   // start at an arbitary place
       {
         LV_LOG_USER("seek success");
         // write to the chosen position

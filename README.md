@@ -96,8 +96,12 @@ board_build.arduino.memory_type = qio_opi
 This is an implementation of the *lv_example_button_1* example from the lvgl examples library. Library installation and PSRAM unlocking is as shown in the previous example.
 ## lvglFileSystem
 lvgl has an abstraction of a file system that interfaces to a physical file system via callback functions.  
-I have implemented a library that provides file I/O (open/close/read/write/seek/tell) and directory(open/read/close) for SD devices. Using my code it should be easy to repeat for another physical device e.g. LittleFS.  
+I have implemented a library that provides file I/O (open/close/read/write/seek/tell) and directory(open/read/close) for SD & LittleFS devices.  
 My source only allows for a single file/directory to be open at any point in time.  
-My sources are in the lib/FileSystem folder.  
-The directory listing example raises and interesting point. lvgl has no way to identify a file as a directory, so how can one do a recursive directory listing? I prepend directory name by DIR:.  
-Note that I did NOT define a logical drive in the *lv_conf.h* file. It is defined in my library source and I arbitarily assigned the letter 'S' to SD device.
+See the source in the lib/FileSystem folder.  
+
+To choose SD or LittleFS uncomment the appropriate line in lib/FileSystem/lv_port_fs.h.  
+If choosing LittleFS you also need to let PlatformIO. See platformio.ini.  
+The directory listing example raises and interesting point. lvgl has no way to identify a file as a directory, so how can one do a recursive directory listing? In lv_fs_dir_read
+I prepend a filename that is a directory by DIR: however this is just my solution.  
+Note that I did NOT define a logical drive in the *lv_conf.h* file. It is defined in my library source and I arbitarily assigned the letter 'S' to both SD and LittleFS devices.

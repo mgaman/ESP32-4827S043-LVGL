@@ -21,6 +21,8 @@ extern "C" {
 /*********************
  *      DEFINES
  *********************/
+//#define DRIVE_TYPE 0   // LittleFS
+#define DRIVE_TYPE 1   // SD
 
 /**********************
  *      TYPEDEFS
